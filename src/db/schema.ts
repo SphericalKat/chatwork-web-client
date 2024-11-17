@@ -1,4 +1,3 @@
-import type { InferSelectModel } from 'drizzle-orm';
 import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 export const userTable = sqliteTable('user', {
@@ -18,5 +17,3 @@ export const sessionTable = sqliteTable('session', {
 	refreshToken: text('refresh_token').notNull()
 });
 
-export type User = InferSelectModel<typeof userTable>;
-export type Session = InferSelectModel<typeof sessionTable>;

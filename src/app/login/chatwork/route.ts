@@ -1,4 +1,4 @@
-import { getRandomString } from "@/app/utils";
+import { getRandomString } from "@/lib/utils";
 import { cookies } from "next/headers";
 
 const CHATWORK_OAUTH_URL = "https://www.chatwork.com/packages/oauth2/login.php";

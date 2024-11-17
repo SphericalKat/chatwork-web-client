@@ -1,3 +1,5 @@
+import { encodeBase32LowerCaseNoPadding } from "@oslojs/encoding";
+
 export const getRandomString = (length = 10) => {
   if (length % 2 === 1) {
     throw new Error("Only even sizes are supported");
@@ -11,3 +13,10 @@ export const getRandomString = (length = 10) => {
   }
   return ret;
 };
+
+export function generateSessionToken(): string {
+  const bytes = new Uint8Array(20);
+  crypto.getRandomValues(bytes);
+  const token = encodeBase32LowerCaseNoPadding(bytes);
+  return token;
+}
