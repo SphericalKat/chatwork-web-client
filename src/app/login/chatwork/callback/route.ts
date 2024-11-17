@@ -68,18 +68,18 @@ export async function GET(request: Request): Promise<Response> {
 }
 
 async function fetchToken(code: string): Promise<TokenData> {
-  const response = await fetch(`${process.env.CHATWORK_OAUTH_API_URL}/token`, {
+  const response = await fetch(`${process.env.NEXT_CHATWORK_OAUTH_API_URL}/token`, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       Authorization: `Basic ${Buffer.from(
-        `${process.env.CHATWORK_CLIENT_ID}:${process.env.CHATWORK_CLIENT_SECRET}`
+        `${process.env.NEXT_CHATWORK_CLIENT_ID}:${process.env.NEXT_CHATWORK_CLIENT_SECRET}`
       ).toString("base64")}`,
     },
     body: new URLSearchParams({
       grant_type: "authorization_code",
       code,
-      redirect_uri: `${process.env.APP_BASE_URL}/login/chatwork/callback`,
+      redirect_uri: `${process.env.NEXT_APP_BASE_URL}/login/chatwork/callback`,
     }),
   });
 

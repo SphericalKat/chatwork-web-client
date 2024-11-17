@@ -1,8 +1,6 @@
 import { getRandomString } from "@/lib/utils";
 import { cookies } from "next/headers";
 
-const CHATWORK_OAUTH_URL = "https://www.chatwork.com/packages/oauth2/login.php";
-
 const scopes = [
   "offline_access",
   "rooms.info:read",
@@ -13,12 +11,12 @@ const scopes = [
 
 export async function GET(): Promise<Response> {
   const state = getRandomString(20);
-  const url = new URL(CHATWORK_OAUTH_URL);
+  const url = new URL(process.env.NEXT_CHATWORK_OAUTH_URL!);
   url.searchParams.set("response_type", "code");
-  url.searchParams.set("client_id", process.env.CHATWORK_CLIENT_ID!);
+  url.searchParams.set("client_id", process.env.NEXT_CHATWORK_CLIENT_ID!);
   url.searchParams.set(
     "redirect_uri",
-    `${process.env.APP_BASE_URL}/login/chatwork/callback`
+    `${process.env.NEXT_APP_BASE_URL}/login/chatwork/callback`
   );
   url.searchParams.set("scope", scopes.join(" "));
   url.searchParams.set("state", state);
