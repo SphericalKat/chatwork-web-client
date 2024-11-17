@@ -4,6 +4,9 @@ import "./globals.css";
 import { authApi } from "@/lib/chatwork";
 import { getCurrentSession } from "@/lib/cookies";
 import { redirect } from "next/navigation";
+import { Panel, PanelGroup } from "react-resizable-panels";
+import ResizableLayout from "@/components/ResizableLayout";
+import { cookies } from "next/headers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,28 +34,26 @@ export default async function RootLayout({
     redirect("/login/chatwork");
   }
 
-  let rooms = [];
+  const rooms = await authApi.roomsGet();
 
-  try {
-    const me = await authApi.meGet();
-    rooms = await authApi.roomsGet();
-  } catch (error) {
-    console.error(error);
+  const cookieStore = await cookies();
+  const layout = cookieStore.get("react-resizable-panels:layout");
+
+  let defaultLayout;
+  if (layout) {
+    defaultLayout = JSON.parse(layout.value);
   }
 
   return (
     <html lang="en" className="w-full h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-full`}
+        className={`antialiased w-full h-full`}
       >
-        <section className="flex flex-col">
-          <section className=""></section>
-          <nav className="h-full">
-            {rooms.map((room) => (
-              <div key={room.roomId}>{room.name}</div>
-            ))}
+        <section className="flex flex-col max-h-full h-full">
+          <nav className="text-white w-full justify-between bg-[#221127]">
+            <div className="mx-4 my-4">Chatwork</div>
           </nav>
-          {children}
+          <ResizableLayout defaultLayout={defaultLayout} rooms={rooms} children={children} />
         </section>
       </body>
     </html>
