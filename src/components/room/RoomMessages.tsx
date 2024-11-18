@@ -1,8 +1,9 @@
 "use client";
-import { authApi, Message } from "@/lib/chatwork";
-import { useEffect, useMemo } from "react";
+import { Message } from "@/lib/chatwork";
+import { useEffect } from "react";
 import useSWR from "swr";
 import RoomMessage from "./RoomMessage";
+import classNames from "classnames";
 
 type Props = {
   roomId: number;
@@ -19,14 +20,31 @@ export default function RoomMessages({ roomId }: Props) {
     fetcher
   );
 
+  // scroll down to the bottom of the messages once the messages are loaded
+  useEffect(() => {
+    if (data) {
+      console.log("scrolling to the bottom");
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  }, [data]);
+
   return (
-    <div className="flex flex-col items-center justify-center text-white">
+    <div
+      className={classNames("flex flex-col flex-1 w-full h-full text-white", {
+        "items-center justify-center": isLoading,
+        "justify-start items-start": !isLoading,
+      })}
+    >
       {isLoading && <div>Loading...</div>}
       {error && <div>Error: {error.toString()}</div>}
-      <div className="flex flex-col w-full h-full overflow-y-auto items-start px-4">
+      <div className="flex flex-col w-full h-full overflow-auto items-start justify-start px-4">
         {data &&
           (data as Message[]).map((message, idx) => (
-            <RoomMessage message={message} previousMessage={data[idx - 1]} />
+            <RoomMessage
+              key={message.messageId}
+              message={message}
+              previousMessage={data[idx - 1]}
+            />
           ))}
       </div>
     </div>

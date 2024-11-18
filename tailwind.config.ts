@@ -9,7 +9,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-funnel-display)', 'var(--font-noto-sans-jp)', 'ui-sans-serif', 'system-ui'],
+        sans: [
+          "var(--font-funnel-display)",
+          "var(--font-noto-sans-jp)",
+          "ui-sans-serif",
+          "system-ui",
+        ],
+        lato: ["var(--font-lato)", "ui-sans-serif", "system-ui"],
       },
       colors: {
         background: "var(--background)",

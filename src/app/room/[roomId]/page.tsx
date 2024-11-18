@@ -16,8 +16,10 @@ export default async function Room({
   const [roomDetails] = await Promise.all([authApi.roomsRoomIdGet({ roomId })]);
 
   return (
-    <div>
-      <h1 className="font-sans text-white">{roomDetails.name}</h1>
+    <div className="flex flex-col w-full h-full">
+      <div className="border-b border-[#38393a]">
+        <h1 className="text-white font-bold font-lato px-4 py-4">{roomDetails.name}</h1>
+      </div>
       <Suspense fallback={<div>Loading...</div>}>
         <RoomMessages roomId={roomId} />
       </Suspense>

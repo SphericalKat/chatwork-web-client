@@ -29,7 +29,7 @@ export default function ResizableLayout({
     <PanelGroup direction="horizontal" className="" onLayout={onLayout}>
       <Panel defaultSize={defaultLayout[0]} className="bg-[#221127]">
         {user && (
-          <div className="mt-4 mb-6 font-sans mx-6 font-bold text-white text-xl">
+          <div className="mt-4 mb-6 font-lato mx-6 font-bold text-white text-xl">
             {user.organizationName}
           </div>
         )}
@@ -38,7 +38,7 @@ export default function ResizableLayout({
             <div
               key={room.roomId}
               className={classNames(
-                "items-center overflow-x-clip whitespace-nowrap text-ellipsis font-sans mx-4 px-2 rounded-md py-2 cursor-pointer",
+                "items-center overflow-x-clip whitespace-nowrap text-ellipsis font-lato mx-4 px-2 rounded-md py-2 cursor-pointer",
                 {
                   "font-bold text-white": room.unreadNum ?? 0 > 0,
                   "bg-[#7d3986]": room.roomId == currentRoomId,
@@ -60,8 +60,8 @@ export default function ResizableLayout({
         className="w-[1px] bg-[#221127e2]"
         id="resize-handle"
       />
-      <Panel defaultSize={defaultLayout[1]}>
-        <div className="h-full overflow-y-auto bg-[#1a1d21] border-l border-t border-[#221127e2]">
+      <Panel defaultSize={defaultLayout[1]} className="h-full">
+        <div className="flex h-full bg-[#1a1d21] border-l border-t border-[#221127e2]">
           {children}
         </div>
       </Panel>

@@ -24,11 +24,11 @@ export default function RoomMessage({ message, previousMessage }: Props) {
           alt=""
         />
       )}
-      <div className="flex flex-col ml-2">
+      <div className="flex flex-col ml-2 font-lato">
         {!isSameAccount(message, previousMessage) && (
           <div className="font-bold">{message.account?.name}</div>
         )}
-        <div className={classNames({
+        <div className={classNames("font-lato", {
           "ml-10": isSameAccount(message, previousMessage),
         })}>{message.body}</div>
       </div>
