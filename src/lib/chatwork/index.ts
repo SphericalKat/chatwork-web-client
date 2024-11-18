@@ -4,9 +4,7 @@ export * from "./runtime";
 export * from "./apis/index";
 export * from "./models/index";
 
-import { updateUserTokens } from "@/db/users";
-import { getCurrentSession, setSessionTokenCookie } from "../cookies";
-import { Session, TokenData } from "../types";
+import { getCurrentSession } from "../cookies";
 import { DefaultApi } from "./apis/DefaultApi";
 import {
   Configuration,
@@ -14,9 +12,6 @@ import {
   RequestContext,
   ResponseContext,
 } from "./runtime";
-import { createSession, invalidateSession } from "@/db/sessions";
-import { generateSessionToken } from "../utils";
-import { refreshToken } from "@/app/actions/refreshToken";
 
 const config = new Configuration();
 export const api = new DefaultApi(config);
@@ -43,13 +38,14 @@ const refreshMiddleware = async (
     console.log("refreshMiddleware", session, user);
     if (session) {
       try {
-        const resp = await fetch("/login/chatwork", {
+        const resp = await fetch(`${process.env.NEXT_APP_BASE_URL}/login/chatwork`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(session),
         });
+        console.log("refreshMiddleware", resp.status);
         const { accessToken }: { accessToken: string } = await resp.json();
         console.log("refreshed token", accessToken);
         const newContext = await context.fetch(context.url, {

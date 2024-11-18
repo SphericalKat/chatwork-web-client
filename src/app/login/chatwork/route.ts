@@ -77,6 +77,7 @@ export async function POST(request: Request): Promise<Response> {
 
     return Response.json(newSession);
   } catch (error) {
+    console.log("ERROR REFRESHING TOKEN", error);
     console.error(error);
     return new Response(null, {
       status: 500,

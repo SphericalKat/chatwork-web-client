@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { authApi } from "@/lib/chatwork";
 import { getCurrentSession } from "@/lib/cookies";
 import { redirect } from "next/navigation";
-import ResizableLayout from "@/components/ResizableLayout";
-import { cookies } from "next/headers";
 import { Noto_Sans_JP, Funnel_Display } from "next/font/google";
 
 const funnelDisplay = Funnel_Display({
@@ -34,33 +31,16 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { user } = await getCurrentSession();
-  console.log(user);
   if (!user) {
     redirect("/login/chatwork");
   }
 
-  const rooms = await authApi.roomsGet();
-
-  const cookieStore = await cookies();
-  const layout = cookieStore.get("react-resizable-panels:layout");
-
-  let defaultLayout;
-  if (layout) {
-    defaultLayout = JSON.parse(layout.value);
-  }
-
   return (
-    <html lang="en" className={`w-full h-full ${funnelDisplay.variable} ${notoSansJP.variable}`}>
-      <body className={`antialiased w-full h-full`}>
-        <section className="flex flex-col max-h-full h-full">
-          <nav className="text-white w-full justify-between bg-[#221127]">
-            <div className="font-sans font-bold mx-4 my-4">Chatwork</div>
-          </nav>
-          <ResizableLayout defaultLayout={defaultLayout} rooms={rooms}>
-            {children}
-          </ResizableLayout>
-        </section>
-      </body>
+    <html
+      lang="en"
+      className={`w-full h-full ${funnelDisplay.variable} ${notoSansJP.variable}`}
+    >
+      <body className={`antialiased w-full h-full`}>{children}</body>
     </html>
   );
 }

@@ -8,11 +8,6 @@ export default async function Home() {
     redirect("/login/chatwork");
   }
 
-  const me = await authApi.meGet();
-
-  return (
-    <div>
-      {me.name}
-    </div>
-  );
+  const rooms = await authApi.roomsGet();
+  redirect(`/room/${rooms[0].roomId}`);
 }
