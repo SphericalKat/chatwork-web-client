@@ -8,6 +8,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-funnel-display)', 'var(--font-noto-sans-jp)', 'ui-sans-serif', 'system-ui'],
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

@@ -1,22 +1,26 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "./globals.css";
 import { authApi } from "@/lib/chatwork";
 import { getCurrentSession } from "@/lib/cookies";
 import { redirect } from "next/navigation";
-import { Panel, PanelGroup } from "react-resizable-panels";
 import ResizableLayout from "@/components/ResizableLayout";
 import { cookies } from "next/headers";
+import { Noto_Sans_JP, Funnel_Display } from "next/font/google";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
+const funnelDisplay = Funnel_Display({
+  weight: ["300", "400", "700"],
+  style: ["normal"],
+  display: "swap",
+  subsets: ["latin"],
+  variable: "--font-funnel-display",
 });
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
+
+const notoSansJP = Noto_Sans_JP({
+  weight: ["200", "400", "700"],
+  style: ["normal"],
+  display: "swap",
+  preload: false,
+  variable: "--font-noto-sans-jp",
 });
 
 export const metadata: Metadata = {
@@ -30,6 +34,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const { user } = await getCurrentSession();
+  console.log(user);
   if (!user) {
     redirect("/login/chatwork");
   }
@@ -45,15 +50,15 @@ export default async function RootLayout({
   }
 
   return (
-    <html lang="en" className="w-full h-full">
-      <body
-        className={`antialiased w-full h-full`}
-      >
+    <html lang="en" className={`w-full h-full ${funnelDisplay.variable} ${notoSansJP.variable}`}>
+      <body className={`antialiased w-full h-full`}>
         <section className="flex flex-col max-h-full h-full">
           <nav className="text-white w-full justify-between bg-[#221127]">
-            <div className="mx-4 my-4">Chatwork</div>
+            <div className="font-sans font-bold mx-4 my-4">Chatwork</div>
           </nav>
-          <ResizableLayout defaultLayout={defaultLayout} rooms={rooms} children={children} />
+          <ResizableLayout defaultLayout={defaultLayout} rooms={rooms}>
+            {children}
+          </ResizableLayout>
         </section>
       </body>
     </html>

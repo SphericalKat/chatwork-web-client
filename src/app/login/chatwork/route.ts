@@ -1,4 +1,8 @@
-import { getRandomString } from "@/lib/utils";
+import { invalidateSession, createSession } from "@/db/sessions";
+import { updateUserTokens } from "@/db/users";
+import { setSessionTokenCookie } from "@/lib/cookies";
+import { Session } from "@/lib/types";
+import { generateSessionToken, getRandomString } from "@/lib/utils";
 import { cookies } from "next/headers";
 
 const scopes = [
@@ -35,5 +39,47 @@ export async function GET(): Promise<Response> {
     headers: {
       Location: url.toString(),
     },
-  })
+  });
+}
+
+export async function POST(request: Request): Promise<Response> {
+  try {
+    // get request body
+    const session = (await request.json()) as Session;
+    const response = await fetch(
+      `${process.env.NEXT_CHATWORK_OAUTH_API_URL}/token`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Basic ${Buffer.from(
+            `${process.env.NEXT_CHATWORK_CLIENT_ID}:${process.env.NEXT_CHATWORK_CLIENT_SECRET}`
+          ).toString("base64")}`,
+        },
+        body: new URLSearchParams({
+          grant_type: "refresh_token",
+          refresh_token: session.refreshToken,
+        }),
+      }
+    );
+
+    const { access_token, refresh_token } = await response.json();
+    await updateUserTokens(session.userId, access_token, refresh_token);
+    await invalidateSession(session.id);
+    const sessionToken = generateSessionToken();
+    const newSession = await createSession(
+      sessionToken,
+      session.userId,
+      access_token,
+      refresh_token
+    );
+    await setSessionTokenCookie(newSession.id, newSession.expiresAt);
+
+    return Response.json(newSession);
+  } catch (error) {
+    console.error(error);
+    return new Response(null, {
+      status: 500,
+    });
+  }
 }

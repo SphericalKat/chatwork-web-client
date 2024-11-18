@@ -6,7 +6,7 @@ export * from "./models/index";
 
 import { updateUserTokens } from "@/db/users";
 import { getCurrentSession, setSessionTokenCookie } from "../cookies";
-import { TokenData } from "../types";
+import { Session, TokenData } from "../types";
 import { DefaultApi } from "./apis/DefaultApi";
 import {
   Configuration,
@@ -16,6 +16,7 @@ import {
 } from "./runtime";
 import { createSession, invalidateSession } from "@/db/sessions";
 import { generateSessionToken } from "../utils";
+import { refreshToken } from "@/app/actions/refreshToken";
 
 const config = new Configuration();
 export const api = new DefaultApi(config);
@@ -36,28 +37,26 @@ const authMiddleware = async (
 const refreshMiddleware = async (
   context: ResponseContext
 ): Promise<Response | void> => {
+  console.log("refreshMiddleware", context.response.status);
   if (context.response.status === 401) {
     const { session, user } = await getCurrentSession();
+    console.log("refreshMiddleware", session, user);
     if (session) {
       try {
-        const { access_token, refresh_token } = await refreshToken(
-          session.refreshToken
-        );
-        await updateUserTokens(session.userId, access_token, refresh_token);
-        await invalidateSession(session.id);
-        const sessionToken = generateSessionToken();
-        const newSession = await createSession(
-          sessionToken,
-          user.id,
-          access_token,
-          refresh_token
-        );
-        await setSessionTokenCookie(newSession.id, newSession.expiresAt);
+        const resp = await fetch("/login/chatwork", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(session),
+        });
+        const { accessToken }: { accessToken: string } = await resp.json();
+        console.log("refreshed token", accessToken);
         const newContext = await context.fetch(context.url, {
           ...context.init,
           headers: {
             ...context.init.headers,
-            Authorization: `Bearer ${access_token}`,
+            Authorization: `Bearer ${accessToken}`,
           },
         });
         return newContext;
@@ -74,24 +73,3 @@ const refreshMiddleware = async (
 export const authApi = new DefaultApi(config)
   .withPreMiddleware(authMiddleware)
   .withPostMiddleware(refreshMiddleware);
-
-const refreshToken = async (refreshToken: string): Promise<TokenData> => {
-  const response = await fetch(
-    `${process.env.NEXT_CHATWORK_OAUTH_API_URL}/token`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${Buffer.from(
-          `${process.env.NEXT_CHATWORK_CLIENT_ID}:${process.env.NEXT_CHATWORK_CLIENT_SECRET}`
-        ).toString("base64")}`,
-      },
-      body: new URLSearchParams({
-        grant_type: "refresh_token",
-        refresh_token: refreshToken,
-      }),
-    }
-  );
-
-  return response.json();
-};
