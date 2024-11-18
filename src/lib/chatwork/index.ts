@@ -21,10 +21,18 @@ const authMiddleware = async (
 ): Promise<FetchParams | void> => {
   const { session } = await getCurrentSession();
   if (session) {
-    context.init.headers = {
-      ...context.init.headers,
-      Authorization: `Bearer ${session.accessToken}`,
-    };
+    if (!context.init.headers) {
+      context.init.headers = {};
+    }
+    if (context.init.headers) {
+      context.init.headers = {
+        ...context.init.headers,
+        // @ts-ignore
+      } as Record<string, string>;
+      if (!context.init.headers?.["Authorization"]) {
+        context.init.headers["Authorization"] = `Bearer ${session.accessToken}`;
+      }
+    }
   }
   return Promise.resolve(context);
 };
@@ -38,17 +46,20 @@ const refreshMiddleware = async (
     console.log("refreshMiddleware", session, user);
     if (session) {
       try {
-        const resp = await fetch(`${process.env.NEXT_APP_BASE_URL}/login/chatwork`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(session),
-        });
+        const resp = await fetch(
+          `${process.env.NEXT_APP_BASE_URL}/login/chatwork`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(session),
+          }
+        );
         console.log("refreshMiddleware", resp.status);
         const { accessToken }: { accessToken: string } = await resp.json();
         console.log("refreshed token", accessToken);
-        const newContext = await context.fetch(context.url, {
+        const newContext = await fetch(context.url, {
           ...context.init,
           headers: {
             ...context.init.headers,

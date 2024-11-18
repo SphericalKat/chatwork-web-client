@@ -1,3 +1,4 @@
+"use server";
 import { validateSessionToken } from "@/db/sessions";
 import { cookies } from "next/headers";
 import { SessionValidationResult } from "./types";
