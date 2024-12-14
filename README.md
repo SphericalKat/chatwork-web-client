@@ -34,7 +34,7 @@ NEXT_APP_BASE_URL="https://abc.def.ts.net"
 * Click 'Create New'  
   <img width="147" alt="image" src="https://github.com/user-attachments/assets/60928e57-88db-47ae-875e-291a4c66bf40" />
 * Choose any _Client Name_ and _Client Type_, and check all checkboxes in _Scope_. You don't need to choose an _Icon_.
-* For 'Redirect URI', append `/login/chatwork/callback` to the value you set to `NEXT_APP_BASE_URL`, which will look something like `https://abc.def.ts.net/login/chatwork/callback`  
+* For _Redirect URI_, append `/login/chatwork/callback` to the value you set to `NEXT_APP_BASE_URL`, which will look something like `https://abc.def.ts.net/login/chatwork/callback`. Just this one will do for now.  
 * Press _Create_ at the bottom of the screen, and you'll get redirected to a screen that will have your Client ID and Client Secret. Set them in your `.env`.  
 * Now visit `https://abc.def.ts.net` in your browser, and you should be able to grant access and proceed to the web app with all your chats visible!
 
